@@ -499,3 +499,58 @@ Expected: Actions 绿勾；HTTP 状态码 `200`。
 - [ ] **Step 6: 收尾说明**
 
 向用户交代日常写作流程：在 `src/content/posts/` 新建 Markdown 文件 → `git add/commit/push` → 自动发布；横幅图/头像/签名以后可通过 `src/config.ts` 与 `src/assets/images/` 自行替换。
+
+---
+
+### Task 7: 轻度个性化 — 主题色 / 字体 / 文案 / 头像横幅
+
+在 Task 6 上线之后执行（用户决策：先上线，再个性化；push 后自动更新）。
+
+**Files:**
+- Modify: `src/config.ts`（themeColor 色相、头像路径）
+- Modify: `src/styles/main.css`（或字体实际定义处：中文字体栈）
+- Modify: 页脚组件（页脚署名，保留 Fuwari credit）
+- Create: `src/assets/images/avatar.svg`（灯塔占位头像，若图片管线支持）
+- Create: `src/assets/images/banner.svg`（灯塔渐变横幅占位，若启用 banner 且图片管线支持）
+
+**Interfaces:**
+- Consumes: Task 2-6 的完整站点。
+- Produces: 与原版 Fuwari 有可辨识差异的轻量视觉：海蓝色调、中文友好的字体栈、中文页脚署名。
+
+- [ ] **Step 1: 主题色**
+
+在 `src/config.ts` 找到 `themeColor`（形如 `{ hue: 250 }`），改为 `{ hue: 210 }`（海蓝）。若还有 `banner` 配置项（`{ enable, src }`），先保持 `enable: false`，在 Step 3 测试后再决定开启。
+
+- [ ] **Step 2: 中文字体栈**
+
+找到字体定义（`src/styles/main.css` 或 tailwind 配置中的 font-family），在字体栈中加入中文字体，例如：
+
+```css
+font-family: "Roboto", "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+```
+
+保持原栈里的西文字体在前面不变，只把中文回退字体补进 sans 栈；不要引入外部字体文件（保持零依赖、加载快）。
+
+- [ ] **Step 3: 占位头像与横幅（带验证的可选步骤）**
+
+生成灯塔主题的简单 SVG（圆形深蓝底 + 白色灯塔剪影 + 黄色灯光；横幅为深蓝→浅蓝渐变 + 灯塔剪影 + "LIGHTHOUSE" 文字）。写入 `src/assets/images/avatar.svg` 与 `src/assets/images/banner.svg`，然后：
+
+1. 将 `profileConfig.avatar` 指向 `assets/images/avatar.svg`，运行 `pnpm build`。
+2. 构建成功且 `pnpm dev` 页面可见头像（curl 首页 HTML 能看到 avatar.svg 引用）→ 保留；若构建失败或图片服务报错 → 回退为 `demo-avatar.png` 并删除 svg，记录原因。
+3. 若 `siteConfig.banner` 存在：同样方式测试启用 `banner.svg`；不支持则保持关闭。
+4. 后续用户拿到真实头像/横幅图片后，替换 `src/assets/images/` 下的文件即可。
+
+- [ ] **Step 4: 页脚署名**
+
+在页脚组件中保留 "Powered by Fuwari" 与 Astro 的原有署名，在其旁补一行中文版权：`© 2026 lshhh666 · 灯塔 Lighthouse`。不删除原作者署名（MIT 礼仪）。
+
+- [ ] **Step 5: 构建与页面验证**
+
+Run: `pnpm build`，期望成功；`pnpm dev` 后 curl 首页确认 hue 生效（HTML/CSS 中颜色变量变化）且页脚包含新署名。
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add -A
+git commit -m "feat: 轻度个性化——海蓝主题色、中文字体栈、页脚署名、占位头像横幅"
+```
