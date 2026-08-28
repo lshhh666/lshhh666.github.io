@@ -1,3 +1,11 @@
+/* NOTE: this file is compiled standalone (it enters the build via ImageWrapper's
+   import.meta.glob("../../**")). `@apply link` / `@apply btn-regular-dark` below reference
+   component classes defined in main.css, and Tailwind can randomly fail with
+   "The `link` class does not exist" depending on which file it compiles first.
+   Inlining main.css here (postcss-import) makes the component classes always available
+   before the rules below, so the build is deterministic. */
+@import "./main.css";
+
 .custom-md {
     h1 {
         @apply text-3xl;
