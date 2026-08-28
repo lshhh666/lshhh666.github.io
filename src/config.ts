@@ -43,6 +43,10 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
+		{
+			name: "作品",
+			url: "/projects/", // Internal links should not include the base path, as it is automatically added
+		},
 		LinkPreset.About,
 		{
 			name: "GitHub",
