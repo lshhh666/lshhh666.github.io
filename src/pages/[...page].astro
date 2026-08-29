@@ -3,7 +3,6 @@ import type { GetStaticPaths } from "astro";
 import { Image } from "astro:assets";
 import heroNight from "../assets/images/hero-night.jpg";
 import Footer from "../components/Footer.astro";
-import Navbar from "../components/Navbar.astro";
 import Pagination from "../components/control/Pagination.astro";
 import { PAGE_SIZE } from "../constants/constants";
 import Layout from "../layouts/Layout.astro";
@@ -23,7 +22,6 @@ const rows = page.data;
 ---
 
 <Layout>
-    <Navbar></Navbar>
     <main class="relative z-10" id="swup-container">
         {isFront && (
         <section class="relative overflow-hidden" style={`height:min(66vh, 620px); min-height:440px;`}>
