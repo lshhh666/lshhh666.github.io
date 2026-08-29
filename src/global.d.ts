@@ -1,9 +1,6 @@
-import type { AstroIntegration } from "@swup/astro";
-
 declare global {
 	interface Window {
-		// type from '@swup/astro' is incorrect
-		swup: AstroIntegration;
+		__lenis?: { scrollTo: (target: number | string | HTMLElement, options?: { immediate?: boolean }) => void };
 		pagefind: {
 			search: (query: string) => Promise<{
 				results: Array<{
@@ -39,3 +36,5 @@ interface SearchResult {
 	raw_url?: string;
 	sub_results?: SearchResult[];
 }
+
+export {};

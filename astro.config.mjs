@@ -3,7 +3,6 @@ import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
-import swup from "@swup/astro";
 import expressiveCode from "astro-expressive-code";
 import icon from "astro-icon";
 import { defineConfig } from "astro/config";
@@ -31,23 +30,9 @@ export default defineConfig({
 	trailingSlash: "always",
 	integrations: [
 		tailwind({
-			nesting: true,
-		}),
-		swup({
-				theme: false,
-				animationClass: "transition-swup-", // see https://swup.js.org/options/#animationselector
-				// the default value `transition-` cause transition delay
-				// when the Tailwind class `transition-all` is used
-				containers: ["main", "#toc"],
-				smoothScrolling: false, // 惯性滚动交给 lenis（见 Layout.astro），避免两套平滑滚动打架
-				cache: true,
-				preload: true,
-				accessibility: true,
-				updateHead: true,
-				updateBodyClass: false,
-				globalInstance: true,
+				nesting: true,
 			}),
-		icon({
+			icon({
 			include: {
 				"preprocess: vitePreprocess(),": ["*"],
 				"fa6-brands": ["*"],

@@ -31,7 +31,6 @@
     "@iconify-json/fa6-solid": "^1.2.4",
     "@iconify-json/material-symbols": "^1.2.89",
     "@iconify/svelte": "^4.2.0",
-    "@swup/astro": "^1.8.0",
     "@tailwindcss/typography": "^0.5.20",
     "astro": "5.18.2",
     "astro-expressive-code": "^0.44.1",
