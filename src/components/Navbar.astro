@@ -66,7 +66,10 @@ function loadButtonScript() {
         menuBtn.onclick = function () {
             let menuPanel = document.getElementById("nav-menu-panel");
             if (menuPanel) {
-                menuPanel.classList.toggle("float-panel-closed");
+                // 直接用内联样式控制显隐，不依赖 Tailwind 类生成
+                const open = menuPanel.style.opacity === "1";
+                menuPanel.style.opacity = open ? "0" : "1";
+                menuPanel.style.pointerEvents = open ? "none" : "auto";
             }
         };
     }

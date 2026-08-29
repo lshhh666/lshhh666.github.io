@@ -116,6 +116,12 @@
     @apply cursor-zoom-in
 }
 
+/* 兜底：浮动面板默认必须隐藏，防止 Tailwind 未生成 .float-panel-closed 时面板外露 */
+.float-panel-closed {
+    opacity: 0;
+    pointer-events: none;
+}
+
 ::selection {
     background-color: var(--selection-bg)
 }
