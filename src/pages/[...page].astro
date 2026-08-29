@@ -1,23 +1,170 @@
 ---
 import type { GetStaticPaths } from "astro";
+import { Image } from "astro:assets";
+import heroNight from "../assets/images/hero-night.jpg";
+import Footer from "../components/Footer.astro";
+import Navbar from "../components/Navbar.astro";
 import Pagination from "../components/control/Pagination.astro";
-import PostPage from "../components/PostPage.astro";
 import { PAGE_SIZE } from "../constants/constants";
-import MainGridLayout from "../layouts/MainGridLayout.astro";
+import Layout from "../layouts/Layout.astro";
 import { getSortedPosts } from "../utils/content-utils";
+import { getPostUrlBySlug, url } from "../utils/url-utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const allBlogPosts = await getSortedPosts();
 	return paginate(allBlogPosts, { pageSize: PAGE_SIZE });
 }) satisfies GetStaticPaths;
-// https://github.com/withastro/astro/issues/6507#issuecomment-1489916992
 
 const { page } = Astro.props;
+const isFront = page.currentPage === 1;
 
-const len = page.data.length;
+const fmtDate = (d: Date) => d.toISOString().slice(0, 10);
+const rows = page.data;
 ---
 
-<MainGridLayout>
-    <PostPage page={page}></PostPage>
-    <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${(len)*50}ms)`}></Pagination>
-</MainGridLayout>
+<Layout>
+    <Navbar></Navbar>
+    <main class="relative z-10" id="swup-container">
+        {isFront && (
+        <section class="relative overflow-hidden" style={`height:min(66vh, 620px); min-height:440px;`}>
+            <div class="absolute -inset-[30px] will-change-transform" data-depth="13" data-scroll="0.16">
+                <Image src={heroNight} format="webp" widths={[1280, 1920, 2400]}
+                       sizes="(max-width: 1280px) 100vw, 1920px"
+                       loading="eager" fetchpriority="high"
+                       alt="夜海中打着光束的灯塔"
+                       class="w-full h-full object-cover"
+                       style="object-position:center 52%; filter:brightness(.98) contrast(1.05) saturate(1.08);"
+                />
+            </div>
+            <div class="absolute inset-0 mix-blend-soft-light"
+                 style="background:linear-gradient(180deg, rgba(50,95,165,.38), rgba(16,24,40,.05) 55%, rgba(255,170,80,.16));"></div>
+            <div class="absolute inset-0 mix-blend-screen hero-glow"
+                 style="background:radial-gradient(300px 170px at 63% 50%, rgba(255,200,120,.14), transparent 70%);"></div>
+            <div class="absolute inset-0"
+                 style="background:radial-gradient(125% 100% at 50% 45%, transparent 58%, rgba(4,6,10,.45));"></div>
+            <div class="absolute inset-0"
+                 style="background:linear-gradient(180deg, rgba(10,12,16,.55) 0%, rgba(10,12,16,.12) 30%, rgba(10,12,16,.02) 55%, rgba(10,12,16,.38) 84%, #0a0c10 100%);"></div>
+
+            <div class="relative max-w-[67.5rem] mx-auto px-4 md:px-8 h-full flex items-end">
+                <div class="max-w-[45rem] pb-14">
+                    <div class="hero-rise text-[11.5px] font-semibold tracking-[.16em] uppercase text-[#e8b06a]" style="animation-delay:.15s">Lighthouse · 灯塔</div>
+                    <h1 class="hero-rise mt-3.5 text-[40px] font-bold tracking-[-.028em] leading-[1.16] text-white" style="text-shadow:0 2px 28px rgba(0,0,0,.6); animation-delay:.3s">写技术，也写生活。</h1>
+                    <p class="hero-rise mt-3 text-[15px] leading-[1.75] text-[#c4cdd8] max-w-[470px]" style="text-shadow:0 1px 14px rgba(0,0,0,.65); animation-delay:.45s">灯塔安静地立在海边，不做声，但一直亮着。这里不定时更新，但每一篇都认真写。</p>
+                </div>
+            </div>
+        </section>
+        )}
+
+        <div class="max-w-[67.5rem] mx-auto px-4 md:px-8">
+            <section class="pt-[26px] pb-10">
+                <div class="rv flex items-baseline justify-between pb-2.5">
+                    <span class="text-[11.5px] font-semibold tracking-[.14em] uppercase text-[#5f6b7a]">最新文章</span>
+                    <a href={url('/archive/')} class="text-[13px] text-[#8fa0b5] hover:text-[#ffb454] transition-colors">全部 →</a>
+                </div>
+
+                {rows.map(({ slug, data }) => (
+                    <a class="rv group grid grid-cols-[72px_1fr_auto] md:grid-cols-[92px_1fr_auto] items-baseline gap-[18px] py-[17px] border-t border-white/[0.05] last:border-b hover:border-[rgba(255,180,84,.22)] transition-colors duration-300"
+                       href={getPostUrlBySlug(slug)}>
+                        <time class="text-[13px] text-[#5f6b7a] tabular-nums">{fmtDate(data.published)}</time>
+                        <span class="text-[15px] font-medium text-[#e8ecf1] tracking-[-.011em] group-hover:text-[#ffb454] transition-colors">{data.title}</span>
+                        <span class="text-[12.5px] text-[#5f6b7a]">{data.category}</span>
+                    </a>
+                ))}
+
+                {isFront && (
+                <a class="rv group flex items-center justify-between border border-white/[0.07] rounded-xl px-[26px] py-[22px] mt-4 bg-gradient-to-b from-white/[0.025] to-transparent hover:border-[rgba(255,180,84,.28)] transition-colors"
+                   href={url('/archive/')}>
+                    <span class="text-[15px] font-semibold text-[#e8ecf1] tracking-[-.01em]">归档 · 全部文章</span>
+                    <span class="text-[12.5px] text-[#8fa0b5]">按年份浏览 →</span>
+                </a>
+                )}
+
+                {!isFront && <Pagination class="mx-auto mt-8" page={page}></Pagination>}
+            </section>
+            <Footer></Footer>
+        </div>
+    </main>
+    <div id="toc" class="hidden"></div>
+</Layout>
+
+<style is:global>
+    .hero-rise {
+        opacity: 0;
+        animation: hero-rise-keyframes 1s cubic-bezier(.16, 1, .3, 1) forwards;
+    }
+    @keyframes hero-rise-keyframes {
+        from { opacity: 0; transform: translateY(22px); }
+        to { opacity: 1; transform: none; }
+    }
+    .rv {
+        opacity: 0;
+        transform: translateY(18px);
+        transition: opacity .8s ease, transform .8s cubic-bezier(.16, 1, .3, 1);
+    }
+    .rv.in {
+        opacity: 1;
+        transform: none;
+    }
+    @keyframes hero-lamp {
+        from { opacity: .5; }
+        to { opacity: 1; }
+    }
+    .hero-glow { animation: hero-lamp 6s ease-in-out infinite alternate; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .hero-rise, .rv { opacity: 1 !important; transform: none !important; animation: none !important; transition: none !important; }
+        .hero-glow { animation: none !important; }
+        [data-depth] { transform: none !important; }
+    }
+</style>
+
+<script>
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function initMotion() {
+        // 滚动浮现
+        const io = new IntersectionObserver((es) => {
+            es.forEach((en) => {
+                if (en.isIntersecting) {
+                    const el = en.target as HTMLElement;
+                    el.classList.add('in');
+                    setTimeout(() => (el.style.transitionDelay = '0ms'), 900);
+                    io.unobserve(el);
+                }
+            });
+        }, { threshold: .12 });
+        document.querySelectorAll<HTMLElement>('.rv:not(.motion-bound)').forEach((el, i) => {
+            el.classList.add('motion-bound');
+            el.style.transitionDelay = `${(i % 8) * 70}ms`;
+            io.observe(el);
+        });
+        return Array.from(document.querySelectorAll<HTMLElement>('[data-depth]'));
+    }
+
+    if (!reduce) {
+        let layers = initMotion();
+        let tx = 0, ty = 0, cx = 0, cy = 0;
+        addEventListener('mousemove', (e) => {
+            tx = e.clientX / innerWidth - .5;
+            ty = e.clientY / innerHeight - .5;
+        });
+        const loop = () => {
+            const sy = scrollY;
+            cx += (tx - cx) * .05;
+            cy += (ty - cy) * .05;
+            for (const l of layers) {
+                const d = +(l.dataset.depth || 0), s = +(l.dataset.scroll || 0);
+                l.style.transform = `translate3d(${(-cx * d).toFixed(2)}px, ${(-cy * d - sy * s).toFixed(2)}px, 0)`;
+            }
+            requestAnimationFrame(loop);
+        };
+        requestAnimationFrame(loop);
+
+        const setup = () => { window.swup.hooks.on('page:view', () => { layers = initMotion(); }); };
+        if (window.swup) {
+            setup();
+        } else {
+            document.addEventListener('swup:enable', setup);
+        }
+    }
+</script>
