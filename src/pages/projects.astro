@@ -10,8 +10,8 @@ const projects = (await getCollection('projects')).sort(
 <MainGridLayout title="作品" description="个人作品集">
   <div class="flex w-full flex-col gap-4">
     <div class="card-base p-6">
-      <h1 class="text-3xl font-bold">作品</h1>
-      <p class="mt-2 text-[var(--secondary)]">我做过的和正在做的东西。</p>
+      <h1 class="text-3xl font-bold text-[#e8ecf1]">作品</h1>
+      <p class="mt-2 text-[15px] text-[#8fa0b5]">我做过的和正在做的东西。</p>
     </div>
     {projects.map((project) => (
       <a
@@ -21,12 +21,12 @@ const projects = (await getCollection('projects')).sort(
         class="card-base group p-6 transition hover:-translate-y-0.5"
       >
         <div class="flex items-center justify-between">
-          <h2 class="text-2xl font-bold transition group-hover:text-[var(--primary)]">
+          <h2 class="text-2xl font-bold text-[#e8ecf1] transition group-hover:text-[#ffb454]">
             {project.data.title}
           </h2>
-          <span class="text-sm text-[var(--primary)]">前往 ↗</span>
+          <span class="text-sm text-[#8fa0b5] group-hover:text-[#ffb454] transition-colors">前往 ↗</span>
         </div>
-        <p class="mt-2 text-[var(--secondary)]">{project.data.description}</p>
+        <p class="mt-2 text-[15px] text-[#8fa0b5]">{project.data.description}</p>
       </a>
     ))}
   </div>
