@@ -1,0 +1,126 @@
+---
+// 交互星场：canvas 绘制，星星缓慢漂移 + 闪烁，鼠标靠近时轻微吸引并增亮。
+// 替代原先三层静态星星 div。参数与站点配色一致（蓝白星、低饱和）。
+---
+
+<canvas id="star-field" class="fixed inset-0 z-0 pointer-events-none" aria-hidden="true"></canvas>
+
+<script>
+const canvas = document.getElementById('star-field') as HTMLCanvasElement;
+const ctx = canvas.getContext('2d');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if (canvas && ctx) {
+	type Star = {
+		hx: number; hy: number;   // home 位置
+		x: number; y: number;     // 当前位置
+		vx: number; vy: number;   // 漂移速度
+		r: number;                // 半径
+		base: number;             // 基础透明度
+		depth: number;            // 视差深度 0.3~1
+		phase: number;            // 闪烁相位
+		speed: number;            // 闪烁速度
+	};
+
+	let W = 0, H = 0, dpr = 1;
+	let stars: Star[] = [];
+	const mouse = { x: -9999, y: -9999 };
+	const R = 140;            // 鼠标影响半径
+	const PULL = 0.028;       // 吸引强度
+	const MAX_OFF = 26;       // 离开 home 的最大位移
+
+	function scatter(): Star[] {
+		const area = W * H;
+		const n = Math.min(170, Math.max(70, Math.round(area / 11000)));
+		const list: Star[] = [];
+		for (let i = 0; i < n; i++) {
+			const hx = Math.random() * W;
+			const hy = Math.random() * H;
+			list.push({
+				hx, hy, x: hx, y: hy,
+				vx: (Math.random() - .5) * .06,
+				vy: (Math.random() - .5) * .06,
+				r: .4 + Math.random() * 1.0,
+				base: .18 + Math.random() * .5,
+				depth: .3 + Math.random() * .7,
+				phase: Math.random() * Math.PI * 2,
+				speed: .4 + Math.random() * 1.2,
+			});
+		}
+		return list;
+	}
+
+	function resize() {
+		dpr = Math.min(2, devicePixelRatio || 1);
+		W = innerWidth; H = innerHeight;
+		canvas.width = W * dpr;
+		canvas.height = H * dpr;
+		canvas.style.width = W + 'px';
+		canvas.style.height = H + 'px';
+		ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+		stars = scatter();
+	}
+
+	addEventListener('resize', resize);
+	resize();
+
+	addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
+	addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+	let t = 0;
+	function frame() {
+		t += .016;
+		ctx!.clearRect(0, 0, W, H);
+
+		for (const s of stars) {
+			// 缓慢漂移 + 环绕
+			s.hx += s.vx; s.hy += s.vy;
+			if (s.hx < -10) s.hx = W + 10; else if (s.hx > W + 10) s.hx = -10;
+			if (s.hy < -10) s.hy = H + 10; else if (s.hy > H + 10) s.hy = -10;
+
+			// 鼠标吸引（带最大位移限制的软弹簧）
+			const dxm = mouse.x - s.x, dym = mouse.y - s.y;
+			const d2 = dxm * dxm + dym * dym;
+			let boost = 0;
+			if (d2 < R * R) {
+				const d = Math.sqrt(d2) || 1;
+				const f = 1 - d / R;
+				s.x += dxm * PULL * f;
+				s.y += dym * PULL * f;
+				boost = f * .45;
+			}
+			// 回归 home
+			s.x += (s.hx - s.x) * .008;
+			s.y += (s.hy - s.y) * .008;
+			const ox = s.x - s.hx, oy = s.y - s.hy;
+			const off = ox * ox + oy * oy;
+			if (off > MAX_OFF * MAX_OFF) {
+				const k = MAX_OFF / Math.sqrt(off);
+				s.x = s.hx + ox * k;
+				s.y = s.hy + oy * k;
+			}
+
+			// 闪烁
+			const tw = .72 + .28 * Math.sin(t * s.speed + s.phase);
+			const a = Math.min(1, s.base * tw + boost);
+
+			// 视差：鼠标 + 滚动（沿用原三层的深度手感）
+			const px = s.x - (mouse.x - W / 2) * .012 * s.depth;
+			const py = s.y - (mouse.y - H / 2) * .012 * s.depth - scrollY * .05 * s.depth;
+
+			ctx!.beginPath();
+			ctx!.fillStyle = `rgba(201,214,234,${a.toFixed(3)})`;
+			ctx!.arc(px, py, s.r, 0, Math.PI * 2);
+			ctx!.fill();
+		}
+		if (!reduce) requestAnimationFrame(frame);
+	}
+
+	if (reduce) {
+		// 减少动态：只画一帧静态星星
+		requestAnimationFrame(() => frame());
+	} else {
+		requestAnimationFrame(frame);
+	}
+}
+</script>
