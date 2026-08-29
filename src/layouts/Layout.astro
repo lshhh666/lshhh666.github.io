@@ -117,9 +117,8 @@ const bannerOffset =
 			// Dark-only theme: always apply the dark class
 			document.documentElement.classList.add('dark');
 
-			// Load the hue from local storage
-			const hue = localStorage.getItem('hue') || configHue;
-			document.documentElement.style.setProperty('--hue', hue);
+			// Load the hue from config（取色器已隐藏，忽略 localStorage 里的历史值）
+			document.documentElement.style.setProperty('--hue', configHue);
 
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
