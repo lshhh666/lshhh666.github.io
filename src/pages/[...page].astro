@@ -24,7 +24,7 @@ const rows = page.data;
 <Layout>
     <main class="relative z-10 transition-swup-fade" id="swup-container">
         {isFront && (
-        <section class="relative overflow-hidden" style={`height:min(66vh, 620px); min-height:440px;`}>
+        <section class="home-hero relative overflow-hidden">
             <div class="absolute -inset-[30px] will-change-transform" data-depth="13" data-scroll="0.16">
                 <Image src={heroNight} format="webp" widths={[1280, 1920, 2400]}
                        sizes="(max-width: 1280px) 100vw, 1920px"
@@ -44,10 +44,10 @@ const rows = page.data;
                  style="background:linear-gradient(180deg, rgba(10,12,16,.55) 0%, rgba(10,12,16,.12) 30%, rgba(10,12,16,.02) 55%, rgba(10,12,16,.38) 84%, #0a0c10 100%);"></div>
 
             <div class="relative max-w-[67.5rem] mx-auto px-4 md:px-8 h-full flex items-end">
-                <div class="max-w-[45rem] pb-14">
+                <div class="max-w-[46rem] pb-14">
                     <div class="hero-rise text-[11.5px] font-semibold tracking-[.16em] uppercase text-[#e8b06a]" style="animation-delay:.15s">Lighthouse · 灯塔</div>
-                    <h1 class="hero-rise mt-3.5 text-[40px] font-bold tracking-[-.028em] leading-[1.16] text-white" style="text-shadow:0 2px 28px rgba(0,0,0,.6); animation-delay:.3s">写技术，也写生活。</h1>
-                    <p class="hero-rise mt-3 text-[15px] leading-[1.75] text-[#c4cdd8] max-w-[470px]" style="text-shadow:0 1px 14px rgba(0,0,0,.65); animation-delay:.45s">灯塔安静地立在海边，不做声，但一直亮着。这里不定时更新，但每一篇都认真写。</p>
+                    <h1 class="hero-rise mt-3.5 text-[clamp(34px,4vw,44px)] font-bold tracking-[-.035em] leading-[1.16] text-white" style="text-shadow:0 2px 28px rgba(0,0,0,.6); animation-delay:.3s">把做过的东西，<br />和没想明白的事，记下来。</h1>
+                    <p class="hero-rise mt-3 text-[15px] leading-[1.8] text-[#c4cdd8] max-w-[490px]" style="text-shadow:0 1px 14px rgba(0,0,0,.65); animation-delay:.45s">主要写开发记录、项目复盘，偶尔写点别的。不定期更新，但每一篇都认真写。</p>
                 </div>
             </div>
         </section>
@@ -61,16 +61,16 @@ const rows = page.data;
                 </div>
 
                 {rows.map(({ slug, data }) => (
-                    <a class="rv group grid grid-cols-[72px_1fr_auto] md:grid-cols-[92px_1fr_auto] items-baseline gap-[18px] py-[17px] border-t border-white/[0.05] last:border-b hover:border-[rgba(255,180,84,.22)] transition-colors duration-300"
+                    <a class="rv group home-post-row grid md:grid-cols-[92px_1fr_auto] items-baseline gap-x-[18px] gap-y-1 py-[17px] border-t border-white/[0.06] last:border-b hover:border-[rgba(255,180,84,.22)] transition-colors duration-300"
                        href={getPostUrlBySlug(slug)}>
-                        <time class="text-[13px] text-[#5f6b7a] tabular-nums">{fmtDate(data.published)}</time>
-                        <span class="text-[15px] font-medium text-[#e8ecf1] tracking-[-.011em] group-hover:text-[#ffb454] transition-colors">{data.title}</span>
-                        <span class="text-[12.5px] text-[#5f6b7a]">{data.category}</span>
+                        <time class="home-post-date text-[13px] text-[#697585] tabular-nums">{fmtDate(data.published)}</time>
+                        <span class="home-post-title text-[15px] font-medium text-[#e8ecf1] tracking-[-.011em] group-hover:text-[#ffb454] transition-colors">{data.title}</span>
+                        <span class="home-post-category text-[12.5px] text-[#697585]">{data.category}</span>
                     </a>
                 ))}
 
                 {isFront && (
-                <a class="rv group flex items-center justify-between border border-white/[0.07] rounded-xl px-[26px] py-[22px] mt-4 bg-gradient-to-b from-white/[0.025] to-transparent hover:border-[rgba(255,180,84,.28)] transition-colors"
+                <a class="rv group flex items-center justify-between border border-white/[0.07] rounded-lg px-5 md:px-[26px] py-[19px] mt-5 hover:border-[rgba(255,180,84,.28)] transition-colors"
                    href={url('/archive/')}>
                     <span class="text-[15px] font-semibold text-[#e8ecf1] tracking-[-.01em]">归档 · 全部文章</span>
                     <span class="text-[12.5px] text-[#8fa0b5]">按年份浏览 →</span>
@@ -86,6 +86,7 @@ const rows = page.data;
 </Layout>
 
 <style is:global>
+    .home-hero { height: min(66vh, 620px); min-height: 500px; }
     .hero-rise {
         opacity: 0;
         animation: hero-rise-keyframes 1s cubic-bezier(.16, 1, .3, 1) forwards;
@@ -116,6 +117,13 @@ const rows = page.data;
         .rv { pointer-events: auto !important; }
         .hero-glow { animation: none !important; }
         [data-depth] { transform: none !important; }
+    }
+    @media (max-width: 720px) {
+        .home-hero { height: 58svh; min-height: 470px; }
+        .home-post-row { grid-template-columns: minmax(0, 1fr) auto; }
+        .home-post-title { grid-column: 1 / -1; grid-row: 1; }
+        .home-post-date { grid-column: 1; grid-row: 2; }
+        .home-post-category { grid-column: 2; grid-row: 2; }
     }
 </style>
 

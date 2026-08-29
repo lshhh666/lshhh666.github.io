@@ -10,31 +10,20 @@ const { badge, url, label } = Astro.props;
     <button
         class:list={`
             w-full
-            h-10
-            rounded-lg
+            min-h-8
             bg-none
-            hover:bg-[var(--btn-plain-bg-hover)]
-            active:bg-[var(--btn-plain-bg-active)]
-            transition-all
-            pl-2
-            hover:pl-3
-            
-            text-neutral-700
+            transition-colors
+            text-[#8a96a5]
             hover:text-[var(--primary)]
-            dark:text-neutral-300
-            dark:hover:text-[var(--primary)]
         `
         }
     >
-        <div class="flex items-center justify-between relative mr-2">
+        <div class="flex items-center justify-between gap-3 py-1 text-[12.5px]">
             <div class="overflow-hidden text-left whitespace-nowrap overflow-ellipsis  ">
                 <slot></slot>
             </div>
             { badge !== undefined && badge !== null && badge !== '' &&
-                <div class="transition px-2 h-7 ml-4 min-w-[2rem] rounded-lg text-sm font-bold
-                    text-[var(--btn-content)] dark:text-[var(--deep-text)]
-                    bg-[var(--btn-regular-bg)] dark:bg-[var(--primary)]
-                    flex items-center justify-center">
+                <div class="text-[11.5px] tabular-nums text-[#697585]">
                     { badge }
                 </div>
             }

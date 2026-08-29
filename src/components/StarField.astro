@@ -9,6 +9,7 @@
 const canvas = document.getElementById('star-field') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d');
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const coarse = matchMedia('(pointer: coarse)').matches;
 
 if (canvas && ctx) {
 	type Star = {
@@ -25,6 +26,9 @@ if (canvas && ctx) {
 	let W = 0, H = 0, dpr = 1;
 	let stars: Star[] = [];
 	const mouse = { x: -9999, y: -9999 };
+	let hasPointer = false;
+	let t = 0;
+	let raf = 0;
 	const R = 140;            // 鼠标影响半径
 	const PULL = 0.028;       // 吸引强度
 	const MAX_OFF = 26;       // 离开 home 的最大位移
@@ -59,15 +63,25 @@ if (canvas && ctx) {
 		canvas.style.height = H + 'px';
 		ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
 		stars = scatter();
+		if (reduce || coarse) requestAnimationFrame(frame);
 	}
 
 	addEventListener('resize', resize);
 	resize();
 
-	addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; });
-	addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+	if (!coarse) {
+		addEventListener('mousemove', (e) => {
+			mouse.x = e.clientX;
+			mouse.y = e.clientY;
+			hasPointer = true;
+		});
+		addEventListener('mouseleave', () => {
+			mouse.x = -9999;
+			mouse.y = -9999;
+			hasPointer = false;
+		});
+	}
 
-	let t = 0;
 	function frame() {
 		t += .016;
 		ctx!.clearRect(0, 0, W, H);
@@ -82,7 +96,7 @@ if (canvas && ctx) {
 			const dxm = mouse.x - s.x, dym = mouse.y - s.y;
 			const d2 = dxm * dxm + dym * dym;
 			let boost = 0;
-			if (d2 < R * R) {
+			if (hasPointer && d2 < R * R) {
 				const d = Math.sqrt(d2) || 1;
 				const f = 1 - d / R;
 				s.x += dxm * PULL * f;
@@ -105,22 +119,26 @@ if (canvas && ctx) {
 			const a = Math.min(1, s.base * tw + boost);
 
 			// 视差：鼠标 + 滚动（沿用原三层的深度手感）
-			const px = s.x - (mouse.x - W / 2) * .012 * s.depth;
-			const py = s.y - (mouse.y - H / 2) * .012 * s.depth - scrollY * .05 * s.depth;
+			const pointerX = hasPointer ? mouse.x - W / 2 : 0;
+			const pointerY = hasPointer ? mouse.y - H / 2 : 0;
+			const px = s.x - pointerX * .012 * s.depth;
+			const py = s.y - pointerY * .012 * s.depth - scrollY * .05 * s.depth;
 
 			ctx!.beginPath();
 			ctx!.fillStyle = `rgba(201,214,234,${a.toFixed(3)})`;
 			ctx!.arc(px, py, s.r, 0, Math.PI * 2);
 			ctx!.fill();
 		}
-		if (!reduce) requestAnimationFrame(frame);
+		if (!reduce && !coarse && !document.hidden) raf = requestAnimationFrame(frame);
 	}
 
-	if (reduce) {
-		// 减少动态：只画一帧静态星星
-		requestAnimationFrame(() => frame());
-	} else {
-		requestAnimationFrame(frame);
+	if (!reduce && !coarse) {
+		raf = requestAnimationFrame(frame);
 	}
+
+	document.addEventListener('visibilitychange', () => {
+		cancelAnimationFrame(raf);
+		if (!document.hidden && !reduce && !coarse) raf = requestAnimationFrame(frame);
+	});
 }
 </script>

@@ -1,33 +1,51 @@
 ---
-import { getCollection } from 'astro:content';
-import MainGridLayout from '../layouts/MainGridLayout.astro';
+import { getCollection } from "astro:content";
+import MainGridLayout from "../layouts/MainGridLayout.astro";
 
-const projects = (await getCollection('projects')).sort(
-  (a, b) => (a.data.order ?? 0) - (b.data.order ?? 0)
+const projects = (await getCollection("projects")).sort(
+	(a, b) => (a.data.order ?? 0) - (b.data.order ?? 0),
 );
+const [featured, ...rest] = projects;
 ---
 
-<MainGridLayout title="作品" description="个人作品集">
-  <div class="flex w-full flex-col gap-4">
-    <div class="card-base p-6">
-      <h1 class="text-3xl font-bold text-[#e8ecf1]">作品</h1>
-      <p class="mt-2 text-[15px] text-[#8fa0b5]">我做过的和正在做的东西。</p>
-    </div>
-    {projects.map((project) => (
-      <a
-        href={project.data.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        class="card-base group p-6 transition hover:-translate-y-0.5"
-      >
-        <div class="flex items-center justify-between">
-          <h2 class="text-2xl font-bold text-[#e8ecf1] transition group-hover:text-[#ffb454]">
-            {project.data.title}
-          </h2>
-          <span class="text-sm text-[#8fa0b5] group-hover:text-[#ffb454] transition-colors">前往 ↗</span>
-        </div>
-        <p class="mt-2 text-[15px] text-[#8fa0b5]">{project.data.description}</p>
-      </a>
-    ))}
-  </div>
+<MainGridLayout title="作品" description="个人作品集" wide={true}>
+	<header class="projects-intro">
+		<p>Projects · 作品</p>
+		<h1>做过的、正在维护的，<br />以及暂时搁置的东西。</h1>
+		<div>这里不展示技术图标墙，只记录项目解决了什么问题、我在其中做了什么，以及它现在处于什么状态。</div>
+	</header>
+
+	<section class="projects-index">
+		{featured && (
+			<article class="featured-project">
+				<div class="project-number">01 / Featured</div>
+				<div class="project-main">
+					<h2>{featured.data.title}</h2>
+					<p>{featured.data.description}</p>
+					<a href={featured.data.link} target="_blank" rel="noopener noreferrer">查看项目与开发记录 ↗</a>
+				</div>
+				<dl class="project-facts">
+					<div><dt>年份</dt><dd>{featured.data.year ?? "—"}</dd></div>
+					<div><dt>状态</dt><dd>{featured.data.status ?? "—"}</dd></div>
+					<div><dt>负责</dt><dd>{featured.data.role ?? "—"}</dd></div>
+					<div><dt>技术</dt><dd>{featured.data.tech ?? "—"}</dd></div>
+				</dl>
+			</article>
+		)}
+
+		<div class="project-list">
+			{rest.map((project, index) => (
+				<a class="project-index-row" href={project.data.link} target="_blank" rel="noopener noreferrer">
+					<span class="project-number">{String(index + 2).padStart(2, "0")}</span>
+					<span class="project-index-copy">
+						<strong>{project.data.title}</strong>
+						<small>{project.data.description}</small>
+					</span>
+					<span class="project-state">{project.data.status ?? "—"}</span>
+					<span class="project-year">{project.data.year ?? "—"}</span>
+					<span class="project-arrow">查看 ↗</span>
+				</a>
+			))}
+		</div>
+	</section>
 </MainGridLayout>

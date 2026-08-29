@@ -29,6 +29,10 @@ const projectsCollection = defineCollection({
 		link: z.string().url(),
 		cover: z.string().optional(),
 		order: z.number().default(0),
+		year: z.number().optional(),
+		status: z.string().optional(),
+		role: z.string().optional(),
+		tech: z.string().optional(),
 	}),
 });
 export const collections = {
