@@ -1,0 +1,23 @@
+---
+// 全局背景：深蓝环境光 + 三层星空视差层。参数与设计稿 final-b.html 一致。
+---
+
+<div class="fixed inset-0 z-0 pointer-events-none" aria-hidden="true">
+    <div class="absolute inset-0" style="background: radial-gradient(900px 460px at 82% -10%, rgba(46,74,122,.13), transparent 65%), radial-gradient(700px 420px at 8% 30%, rgba(46,74,122,.06), transparent 65%);"></div>
+    <div class="absolute -inset-[60px] will-change-transform stars-layer" data-depth="7" data-scroll="0.02"
+         style="background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cg fill='%23c9d6ea'%3E%3Ccircle cx='30' cy='44' r='1.2'/%3E%3Ccircle cx='150' cy='24' r='.9'/%3E%3Ccircle cx='230' cy='96' r='1.1'/%3E%3Ccircle cx='84' cy='170' r='1'/%3E%3Ccircle cx='196' cy='216' r='1.2'/%3E%3Ccircle cx='262' cy='164' r='.8'/%3E%3Ccircle cx='14' cy='238' r='.9'/%3E%3Ccircle cx='116' cy='116' r='.7'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size:300px 300px; opacity:.10; animation:stars-twinkle 5s ease-in-out infinite alternate;"></div>
+    <div class="absolute -inset-[60px] will-change-transform stars-layer" data-depth="14" data-scroll="0.04"
+         style="background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg fill='%23aebfd8'%3E%3Ccircle cx='60' cy='80' r='.8'/%3E%3Ccircle cx='240' cy='40' r='.6'/%3E%3Ccircle cx='360' cy='150' r='.8'/%3E%3Ccircle cx='130' cy='250' r='.7'/%3E%3Ccircle cx='310' cy='320' r='.9'/%3E%3Ccircle cx='400' cy='240' r='.5'/%3E%3Ccircle cx='30' cy='330' r='.6'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size:420px 420px; opacity:.07;"></div>
+    <div class="absolute -inset-[60px] will-change-transform stars-layer" data-depth="24" data-scroll="0.07"
+         style="background-image:url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='640'%3E%3Cg fill='%238ea2c0'%3E%3Ccircle cx='90' cy='120' r='.6'/%3E%3Ccircle cx='360' cy='60' r='.5'/%3E%3Ccircle cx='540' cy='220' r='.6'/%3E%3Ccircle cx='200' cy='380' r='.5'/%3E%3Ccircle cx='470' cy='480' r='.6'/%3E%3C/g%3E%3C/svg%3E&quot;); background-size:640px 640px; opacity:.05;"></div>
+</div>
+
+<style is:global>
+    @keyframes stars-twinkle {
+        from { opacity: .07; }
+        to { opacity: .13; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .stars-layer { transform: none !important; animation: none !important; }
+    }
+</style>
