@@ -34,19 +34,19 @@ export default defineConfig({
 			nesting: true,
 		}),
 		swup({
-			theme: false,
-			animationClass: "transition-swup-", // see https://swup.js.org/options/#animationselector
-			// the default value `transition-` cause transition delay
-			// when the Tailwind class `transition-all` is used
-			containers: ["main", "#toc"],
-			smoothScrolling: true,
-			cache: true,
-			preload: true,
-			accessibility: true,
-			updateHead: true,
-			updateBodyClass: false,
-			globalInstance: true,
-		}),
+				theme: false,
+				animationClass: "transition-swup-", // see https://swup.js.org/options/#animationselector
+				// the default value `transition-` cause transition delay
+				// when the Tailwind class `transition-all` is used
+				containers: ["main", "#toc"],
+				smoothScrolling: false, // 惯性滚动交给 lenis（见 Layout.astro），避免两套平滑滚动打架
+				cache: true,
+				preload: true,
+				accessibility: true,
+				updateHead: true,
+				updateBodyClass: false,
+				globalInstance: true,
+			}),
 		icon({
 			include: {
 				"preprocess: vitePreprocess(),": ["*"],

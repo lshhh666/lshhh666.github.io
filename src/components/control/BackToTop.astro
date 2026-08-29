@@ -44,6 +44,10 @@ import { Icon } from "astro-icon/components";
 
 <script is:raw is:inline>
 function backToTop() {
+    if (window.__lenis) {
+        window.__lenis.scrollTo(0);
+        return;
+    }
     window.scroll({ top: 0, behavior: 'smooth' });
 }
 </script>

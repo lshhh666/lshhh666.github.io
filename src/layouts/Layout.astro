@@ -498,7 +498,6 @@ window.onresize = () => {
 <script>
 import PhotoSwipeLightbox from "photoswipe/lightbox"
 import "photoswipe/style.css"
-
 let lightbox: PhotoSwipeLightbox
 let pswp = import("photoswipe")
 
@@ -554,5 +553,29 @@ if (window.swup) {
 	setup()
 } else {
 	document.addEventListener("swup:enable", setup)
+}
+</script>
+
+<script>
+// 惯性平滑滚动（lenis）：全站失重感的核心。尊重系统「减少动态」设置。
+import Lenis from "lenis";
+import "lenis/dist/lenis.css";
+
+const prefersReduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (!prefersReduce) {
+	const lenis = new Lenis({ autoRaf: true, lerp: 0.1 });
+	(window as any).__lenis = lenis;
+
+	const setupLenis = () => {
+		// swup 换页时瞬间回到顶部，滚动手感交给 lenis
+		window.swup.hooks.on("visit:start", () => {
+			lenis.scrollTo(0, { immediate: true });
+		});
+	};
+	if (window.swup) {
+		setupLenis();
+	} else {
+		document.addEventListener("swup:enable", setupLenis);
+	}
 }
 </script>
