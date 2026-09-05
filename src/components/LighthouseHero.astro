@@ -24,16 +24,19 @@ import heroNight from "../assets/images/hero-night.jpg";
                     <clipPath id="lh-water"><path d="M0 1195 Q1050 1150 1545 1205 T2400 1200 V1601 H0Z" /></clipPath>
                 </defs>
                 <!-- The photo's broad glow remains ambient light; this softer layer sweeps within it. -->
-                <g class="lh-sweep" filter="url(#lh-soft)" fill="url(#lh-beam)">
+                <g class="lh-steer"><g class="lh-sweep" filter="url(#lh-soft)" fill="url(#lh-beam)">
                     <path d="M1545 806 Q1820 350 2370 95 L2490 460 Q1920 575 1545 806Z" />
                     <path d="M1545 806 Q1230 510 690 265 L460 570 Q1120 685 1545 806Z" opacity=".52" />
-                </g>
+                </g></g>
                 <ellipse class="lh-halo" cx="1545" cy="806" rx="115" ry="85" fill="url(#lh-halo)" />
+                <ellipse class="lh-pointer-glow" cx="1545" cy="806" rx="195" ry="135" fill="url(#lh-halo)" />
+                <g class="lh-atmosphere">
                 <g class="lh-fog lh-fog-far" fill="url(#lh-mist)">
                     <ellipse cx="1360" cy="930" rx="690" ry="100" />
                     <ellipse cx="1950" cy="655" rx="550" ry="115" />
                 </g>
                 <g class="lh-fog lh-fog-near" fill="url(#lh-mist)"><ellipse cx="1110" cy="1115" rx="740" ry="65" /></g>
+                </g>
                 <g clip-path="url(#lh-water)">
                     <g class="lh-reflection">
                         <ellipse cx="1545" cy="1400" rx="95" ry="185" fill="url(#lh-halo)" opacity=".22" />
@@ -54,17 +57,21 @@ import heroNight from "../assets/images/hero-night.jpg";
 
 <style>
     .lighthouse-hero { display: block; position: relative; isolation: isolate; height: min(76vh, 650px); min-height: 590px; overflow: hidden; }
-    .lighthouse-scene { position: absolute; inset: -24px; z-index: -3; transform: translate3d(var(--pointer-x, 0px), var(--pointer-y, 0px), 0); }
+    .lighthouse-scene { position: absolute; inset: -24px; z-index: -3; transform: translate3d(var(--pointer-x, 0px), var(--pointer-y, 0px), 0); transition: transform .9s ease-out; }
     .lighthouse-plane { position: absolute; width: max(100%, calc(var(--scene-height, 700px) * 1.49906)); aspect-ratio: 2400 / 1601; left: 50%; top: 52%; transform: translate(-50%, -52%); }
     .lighthouse-photo { display: block; width: 100%; height: 100%; }
     .lighthouse-light { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: screen; pointer-events: none; }
     .lh-sweep { transform-origin: 1545px 806px; animation: lh-sweep 18s ease-in-out infinite; }
+    .lh-steer { transform-origin: 1545px 806px; transform: rotate(var(--pointer-angle, 0deg)); transition: transform 1.2s ease-out; }
+    .lh-pointer-glow { opacity: var(--pointer-glow, 0); transition: opacity .8s ease-out; }
+    .lh-atmosphere { transform: translateX(var(--pointer-mist, 0px)); transition: transform 1.5s ease-out; }
     .lh-halo { animation: lh-breathe 9s ease-in-out infinite; }
     .lh-fog-far { animation: lh-mist-far 28s ease-in-out infinite alternate; }
     .lh-fog-near { opacity: .6; animation: lh-mist-near 22s ease-in-out infinite alternate; }
     .lh-reflection { animation: lh-reflect 18s ease-in-out infinite; transform-origin: 1545px 1380px; }
     .lh-ripple { animation: lh-ripple 5s ease-in-out infinite; }
     .lighthouse-hero[data-motion="paused"] .lighthouse-light * { animation-play-state: paused; }
+    .lighthouse-hero[data-motion="paused"] .lighthouse-light *, .lighthouse-hero[data-motion="paused"] .lighthouse-scene { transition: none; }
     .lighthouse-shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(5,12,22,.72), rgba(5,12,22,.22) 46%, transparent 72%), linear-gradient(0deg, var(--page-bg), transparent 32%, rgba(7,13,21,.12)); }
     .lighthouse-copy { max-width: 1160px; height: 100%; margin: auto; padding: 0 40px 93px; display: flex; align-items: end; }
     .lighthouse-bottom { position: absolute; bottom: 25px; left: 0; right: 0; max-width: 1160px; padding: 0 40px; margin: auto; display: flex; justify-content: space-between; align-items: center; color: #99a7b7; font-size: 11px; letter-spacing: 1px; }
@@ -87,7 +94,7 @@ import heroNight from "../assets/images/hero-night.jpg";
         .lighthouse-shade { background: linear-gradient(90deg, rgba(5,12,22,.72), rgba(5,12,22,.2)), linear-gradient(0deg, var(--page-bg), rgba(7,13,21,.15) 45%, transparent 80%); }
     }
     @media (prefers-reduced-motion: reduce) {
-        .lighthouse-light * { animation: none !important; }
+        .lighthouse-light * { animation: none !important; transition: none !important; }
         .lighthouse-scene { transform: none !important; }
         .lighthouse-motion { display: none; }
         .lh-sweep { opacity: .35; }
@@ -100,8 +107,9 @@ import heroNight from "../assets/images/hero-night.jpg";
 
         connectedCallback() {
             const scene = this.querySelector<HTMLElement>('.lighthouse-scene');
+            const plane = this.querySelector<HTMLElement>('.lighthouse-plane');
             const button = this.querySelector<HTMLButtonElement>('.lighthouse-motion');
-            if (!scene || !button || this.cleanup) return;
+            if (!scene || !plane || !button || this.cleanup) return;
             const reduce = matchMedia('(prefers-reduced-motion: reduce)');
             const fine = matchMedia('(pointer: fine)');
             let paused = false;
@@ -109,6 +117,14 @@ import heroNight from "../assets/images/hero-night.jpg";
             let pointerFrame = 0;
             let pointerX = 0;
             let pointerY = 0;
+            let proximity = 0;
+            const resetPointer = () => {
+                cancelAnimationFrame(pointerFrame);
+                pointerFrame = 0;
+                for (const property of ['--pointer-x', '--pointer-y', '--pointer-angle', '--pointer-glow', '--pointer-mist']) {
+                    scene.style.removeProperty(property);
+                }
+            };
             const update = () => {
                 const running = !paused && !reduce.matches && visible && !document.hidden;
                 this.dataset.motion = running ? 'running' : 'paused';
@@ -116,14 +132,12 @@ import heroNight from "../assets/images/hero-night.jpg";
                 button.setAttribute('aria-pressed', String(paused));
                 button.textContent = paused ? '播放动效' : '暂停动效';
                 if (!running) {
-                    cancelAnimationFrame(pointerFrame);
-                    pointerFrame = 0;
-                    scene.style.removeProperty('--pointer-x');
-                    scene.style.removeProperty('--pointer-y');
+                    resetPointer();
                 }
             };
             const resize = new ResizeObserver(() => {
                 this.style.setProperty('--scene-height', `${scene.offsetHeight}px`);
+                resetPointer();
             });
             resize.observe(scene);
             const intersection = new IntersectionObserver(([entry]) => {
@@ -132,21 +146,23 @@ import heroNight from "../assets/images/hero-night.jpg";
             });
             intersection.observe(this);
             const toggle = () => { paused = !paused; update(); };
-            const resetPointer = () => {
-                cancelAnimationFrame(pointerFrame);
-                pointerFrame = 0;
-                scene.style.removeProperty('--pointer-x');
-                scene.style.removeProperty('--pointer-y');
-            };
             const pointer = (event: PointerEvent) => {
-                if (!fine.matches || this.dataset.motion !== 'running') return;
+                if (!fine.matches || event.pointerType === 'touch' || this.dataset.motion !== 'running') return;
                 const bounds = this.getBoundingClientRect();
                 pointerX = (event.clientX - bounds.left) / bounds.width - .5;
                 pointerY = (event.clientY - bounds.top) / bounds.height - .5;
+                const imageBounds = plane.getBoundingClientRect();
+                const lampX = imageBounds.left + imageBounds.width * 1545 / 2400;
+                const lampY = imageBounds.top + imageBounds.height * 806 / 1601;
+                proximity = Math.max(0, 1 - Math.hypot(event.clientX - lampX, event.clientY - lampY) / Math.max(240, bounds.width * .32));
                 if (pointerFrame) return;
                 pointerFrame = requestAnimationFrame(() => {
                     scene.style.setProperty('--pointer-x', `${-pointerX * 8}px`);
                     scene.style.setProperty('--pointer-y', `${-pointerY * 5}px`);
+                    // Gentle steering stays anchored to the lamp; distance controls its local halo.
+                    scene.style.setProperty('--pointer-angle', `${pointerX * 9 - pointerY * 3}deg`);
+                    scene.style.setProperty('--pointer-glow', `${proximity * .72}`);
+                    scene.style.setProperty('--pointer-mist', `${pointerX * 48}px`);
                     pointerFrame = 0;
                 });
             };
