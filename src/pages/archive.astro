@@ -1,14 +1,20 @@
 ---
 import ArchivePanel from "@components/ArchivePanel.svelte";
-import I18nKey from "@i18n/i18nKey";
-import { i18n } from "@i18n/translation";
 import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPostsList } from "../utils/content-utils";
-
 const sortedPostsList = await getSortedPostsList();
 ---
-
-<MainGridLayout title={i18n(I18nKey.archive)}>
-    <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte"></ArchivePanel>
+<MainGridLayout title="归档" description="按年份浏览文章，或用分类和标签找到感兴趣的记录。" wide={true}>
+    <header class="archive-intro">
+        <p>归档</p><h1>沿着时间，翻一翻。</h1>
+        <div>开发记录、学习笔记和生活随笔，都收在这里。</div>
+    </header>
+    <ArchivePanel sortedPosts={sortedPostsList} client:load />
 </MainGridLayout>
-
+<style>
+    .archive-intro { padding: 22px 0 34px; border-bottom: 1px solid rgba(188,205,224,.13); }
+    p { margin: 0 0 17px; color: #eab778; font-size: 12px; letter-spacing: 3px; }
+    h1 { margin: 0; color: #e9eef3; font-size: clamp(30px,3.2vw,44px); line-height: 1.4; letter-spacing: -.035em; font-weight: 500; }
+    .archive-intro div { margin-top: 18px; color: #a6b3c3; font-size: 14px; line-height: 1.9; }
+    @media(max-width:760px) { .archive-intro { padding: 0 0 27px; } }
+</style>

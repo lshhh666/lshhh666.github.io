@@ -5,9 +5,11 @@ import { url } from "../../utils/url-utils";
 
 interface Props {
 	links: NavBarLink[];
+    currentPath: string;
 }
 
-const links = Astro.props.links;
+const { links, currentPath } = Astro.props;
+const isActive = (link: NavBarLink) => !link.external && (currentPath.startsWith(url(link.url)) || (link.url === "/archive/" && currentPath.startsWith(url("/posts/"))));
 ---
 <div id="nav-menu-panel" inert class:list={["float-panel float-panel-closed absolute transition-all fixed right-4 px-2 py-2"]}
      style="position: fixed; right: 16px; top: 70px; opacity: 0; pointer-events: none; background-color: var(--float-panel-bg); border-radius: 0.75rem; box-shadow: 0 8px 32px rgba(0,0,0,.45); z-index: 50;">
@@ -16,6 +18,8 @@ const links = Astro.props.links;
             hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
         "
            target={link.external ? "_blank" : null}
+           rel={link.external ? "noopener noreferrer" : undefined}
+           aria-current={isActive(link) ? (currentPath === url(link.url) ? "page" : "location") : undefined}
         >
             <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
                 {link.name}
@@ -31,3 +35,8 @@ const links = Astro.props.links;
         </a>
     ))}
 </div>
+
+<style>
+a[aria-current] { background:rgba(255,180,84,.08); }
+a[aria-current] > div { color:#ffbf71; }
+</style>

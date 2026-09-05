@@ -31,26 +31,49 @@ const fakeResult: SearchResult[] = [
 	},
 ];
 
-const togglePanel = () => {
-	const panel = document.getElementById("search-panel");
-	panel?.classList.toggle("float-panel-closed");
+let searchVersion = 0;
+let restoringFocus = false;
+const showPanel = (show: boolean) => {
+    const panel = document.getElementById("search-panel");
+    if (!panel) return;
+    panel.classList.toggle("float-panel-closed", !show);
+    panel.inert = !show;
+    document.getElementById("search-switch")?.setAttribute("aria-expanded", String(show));
 };
-
+const togglePanel = () => {
+    const opening = document.getElementById("search-panel")?.inert;
+    showPanel(!!opening);
+    if (opening) {
+        document.querySelector<HTMLInputElement>("#search-bar-inside input")?.focus();
+        if (keywordMobile.trim()) search(keywordMobile, false);
+    } else {
+        searchVersion++;
+        isSearching = false;
+    }
+};
+const closeOnEscape = (event: KeyboardEvent) => {
+    const panel = document.getElementById("search-panel");
+    if (event.key !== "Escape" || !panel || panel.inert) return;
+    searchVersion++;
+    isSearching = false;
+    showPanel(false);
+    const target = window.matchMedia("(min-width: 1024px)").matches
+        ? document.querySelector<HTMLInputElement>("#search-bar input")
+        : document.getElementById("search-switch");
+    restoringFocus = true;
+    target?.focus();
+    restoringFocus = false;
+};
 const setPanelVisibility = (show: boolean, isDesktop: boolean): void => {
-	const panel = document.getElementById("search-panel");
-	if (!panel || !isDesktop) return;
-
-	if (show) {
-		panel.classList.remove("float-panel-closed");
-	} else {
-		panel.classList.add("float-panel-closed");
-	}
+    if (isDesktop) showPanel(show);
 };
 
 const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
-	if (!keyword) {
+	const version = ++searchVersion;
+	if (!keyword.trim()) {
 		setPanelVisibility(false, isDesktop);
 		result = [];
+        isSearching = false;
 		return;
 	}
 
@@ -75,14 +98,16 @@ const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
 			console.error("Pagefind is not available in production environment.");
 		}
 
+		if (version !== searchVersion) return;
 		result = searchResults;
-		setPanelVisibility(result.length > 0, isDesktop);
+		setPanelVisibility(true, isDesktop);
 	} catch (error) {
+        if (version !== searchVersion) return;
 		console.error("Search error:", error);
 		result = [];
 		setPanelVisibility(false, isDesktop);
 	} finally {
-		isSearching = false;
+		if (version === searchVersion) isSearching = false;
 	}
 };
 
@@ -125,18 +150,12 @@ onMount(() => {
 	}
 });
 
-$: if (initialized && keywordDesktop) {
-	(async () => {
-		await search(keywordDesktop, true);
-	})();
-}
+$: if (initialized && typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches) search(keywordDesktop, true);
 
-$: if (initialized && keywordMobile) {
-	(async () => {
-		await search(keywordMobile, false);
-	})();
-}
+$: if (initialized && typeof window !== "undefined" && !window.matchMedia("(min-width: 1024px)").matches) search(keywordMobile, false);
 </script>
+
+<svelte:window on:keydown={closeOnEscape} on:searchclose={() => { searchVersion++; isSearching = false; showPanel(false); }} />
 
 <!-- search bar for desktop view -->
 <div id="search-bar" class="hidden lg:flex transition-all items-center h-11 mr-2 rounded-lg
@@ -144,20 +163,20 @@ $: if (initialized && keywordMobile) {
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
 ">
     <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-    <input placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop} on:focus={() => search(keywordDesktop, true)}
+    <input aria-label="搜索文章" placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop} on:focus={() => { if (!restoringFocus) search(keywordDesktop, true); }}
            class="transition-all pl-10 text-sm bg-transparent outline-0
          h-full w-40 active:w-60 focus:w-60 text-black/50 dark:text-white/50"
     >
 </div>
 
 <!-- toggle btn for phone/tablet view -->
-<button on:click={togglePanel} aria-label="Search Panel" id="search-switch"
+<button on:click={togglePanel} aria-label="搜索文章" aria-controls="search-panel" aria-expanded="false" id="search-switch"
         class="btn-plain text-[#c4cdd8] scale-animation lg:!hidden rounded-lg w-11 h-11 active:scale-90">
     <Icon icon="material-symbols:search" class="text-[1.25rem]"></Icon>
 </button>
 
 <!-- search panel -->
-<div id="search-panel" class="float-panel float-panel-closed search-panel absolute md:w-[30rem]
+<div id="search-panel" inert class="float-panel float-panel-closed search-panel absolute md:w-[30rem]
 top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
 
     <!-- search bar inside panel for phone/tablet -->
@@ -166,12 +185,15 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
   ">
         <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-        <input placeholder="Search" bind:value={keywordMobile}
+        <input aria-label="搜索关键词" placeholder="搜索文章" bind:value={keywordMobile}
                class="pl-10 absolute inset-0 text-sm bg-transparent outline-0
                focus:w-60 text-black/50 dark:text-white/50"
         >
     </div>
 
+    <p class="search-status" role="status" aria-live="polite">
+        {#if isSearching}正在搜索…{:else if (keywordDesktop || keywordMobile) && result.length === 0}没有找到相关文章{:else if result.length > 0}找到 {result.length} 篇文章{/if}
+    </p>
     <!-- search results -->
     {#each result as item}
         <a href={item.url}
@@ -188,9 +210,8 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
 </div>
 
 <style>
-  input:focus {
-    outline: 0;
-  }
+  input:focus-visible { outline: 2px solid #efb66b; outline-offset: 2px; border-radius: 8px; }
+  .search-status:not(:empty) { padding:10px 12px; font-size:12px; color:#9eacc0; }
   .search-panel {
     max-height: calc(100vh - 100px);
     overflow-y: auto;

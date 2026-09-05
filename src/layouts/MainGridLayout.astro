@@ -46,7 +46,7 @@ const showToc = !wide && siteConfig.toc.enable && headings.length > 0;
 					<SideBar class="hidden lg:block sticky top-24 self-start onload-animation" headings={headings} />
 				)}
 
-				<main id="swup-container" class="transition-swup-fade min-w-0">
+				<main id="swup-container" tabindex="-1" class="transition-swup-fade min-w-0">
 					<div id="content-wrapper" class="onload-animation">
 						<slot />
 						<Footer />

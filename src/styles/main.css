@@ -320,3 +320,13 @@
     .editorial-markdown h2 { margin-top: 2.6rem !important; font-size: 1.4rem !important; }
     .editorial-post-nav { grid-template-columns: 1fr; gap: 1rem; }
 }
+
+/* Keyboard navigation remains visible against the night background. */
+:where(a, button, input, select, textarea):focus-visible {
+    outline: 2px solid #efb66b;
+    outline-offset: 4px;
+}
+#swup-container { scroll-margin-top: 90px; }
+#swup-container:focus { outline: none; }
+.skip-link { position:fixed; top:12px; left:16px; z-index:100; padding:10px 16px; border-radius:6px; background:#ffbf71; color:#142033; transform:translateY(-160%); }
+.skip-link:focus { transform:translateY(0); }

@@ -43,7 +43,7 @@ const isActive = (link: NavBarLink) => {
         </a>
         <nav class="hidden md:flex gap-6 text-[13.5px]" aria-label="主导航">
             {links.map((l) => {
-                return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
+                return <a aria-label={l.name} aria-current={isActive(l) ? (currentPath === url(l.url) ? "page" : "location") : undefined} rel={l.external ? "noopener noreferrer" : undefined} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
                           class:list={[
                               "relative flex items-center text-[#8fa0b5] hover:text-white transition-colors",
                               {"text-white after:absolute after:left-1/2 after:-bottom-[26px] after:w-4 after:h-[2px] after:-translate-x-1/2 after:bg-[#ffb454]": isActive(l)}
@@ -64,7 +64,7 @@ const isActive = (link: NavBarLink) => {
             </button>
         </div>
         <div class="md:hidden">
-            <NavMenuPanel links={links}></NavMenuPanel>
+            <NavMenuPanel links={links} currentPath={currentPath}></NavMenuPanel>
         </div>
     </div>
 </header>
