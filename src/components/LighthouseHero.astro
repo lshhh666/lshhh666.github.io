@@ -1,0 +1,176 @@
+---
+import { Image } from "astro:assets";
+import heroNight from "../assets/images/hero-night.jpg";
+---
+
+<lighthouse-hero class="lighthouse-hero" data-motion="paused">
+    <div class="lighthouse-scene" aria-hidden="true">
+        <div class="lighthouse-plane">
+            <Image src={heroNight} format="webp" widths={[960, 1440, 1920, 2400]}
+                sizes="(max-width: 760px) 1050px, 100vw" loading="eager" fetchpriority="high" alt=""
+                class="lighthouse-photo" />
+            <!-- Same 2400 × 1601 coordinates as the photograph: crop, parallax and light stay aligned. -->
+            <svg class="lighthouse-light" viewBox="0 0 2400 1601" fill="none">
+                <defs>
+                    <radialGradient id="lh-beam" gradientUnits="userSpaceOnUse" cx="1545" cy="806" r="1150">
+                        <stop stop-color="#ffe6ae" stop-opacity=".85" />
+                        <stop offset=".28" stop-color="#f9d69c" stop-opacity=".4" />
+                        <stop offset="1" stop-color="#b1c8db" stop-opacity="0" />
+                    </radialGradient>
+                    <radialGradient id="lh-halo"><stop stop-color="#fff5cf" stop-opacity=".65" /><stop offset="1" stop-color="#ffd390" stop-opacity="0" /></radialGradient>
+                    <radialGradient id="lh-mist"><stop stop-color="#a4b9cd" stop-opacity=".26" /><stop offset="1" stop-color="#a4b9cd" stop-opacity="0" /></radialGradient>
+                    <linearGradient id="lh-ripple"><stop stop-color="#dfbb81" stop-opacity="0" /><stop offset=".5" stop-color="#ffe3a3" stop-opacity=".65" /><stop offset="1" stop-color="#dfbb81" stop-opacity="0" /></linearGradient>
+                    <filter id="lh-soft" x="-25%" y="-25%" width="150%" height="150%"><feGaussianBlur stdDeviation="13" /></filter>
+                    <clipPath id="lh-water"><path d="M0 1195 Q1050 1150 1545 1205 T2400 1200 V1601 H0Z" /></clipPath>
+                </defs>
+                <!-- The photo's broad glow remains ambient light; this softer layer sweeps within it. -->
+                <g class="lh-sweep" filter="url(#lh-soft)" fill="url(#lh-beam)">
+                    <path d="M1545 806 Q1820 350 2370 95 L2490 460 Q1920 575 1545 806Z" />
+                    <path d="M1545 806 Q1230 510 690 265 L460 570 Q1120 685 1545 806Z" opacity=".52" />
+                </g>
+                <ellipse class="lh-halo" cx="1545" cy="806" rx="115" ry="85" fill="url(#lh-halo)" />
+                <g class="lh-fog lh-fog-far" fill="url(#lh-mist)">
+                    <ellipse cx="1360" cy="930" rx="690" ry="100" />
+                    <ellipse cx="1950" cy="655" rx="550" ry="115" />
+                </g>
+                <g class="lh-fog lh-fog-near" fill="url(#lh-mist)"><ellipse cx="1110" cy="1115" rx="740" ry="65" /></g>
+                <g clip-path="url(#lh-water)">
+                    <g class="lh-reflection">
+                        <ellipse cx="1545" cy="1400" rx="95" ry="185" fill="url(#lh-halo)" opacity=".22" />
+                        {Array.from({ length: 14 }, (_, i) => (
+                            <rect class="lh-ripple" x={1545 - (42 + i * 10) / 2} y={1230 + i * 22}
+                                width={42 + i * 10} height={2 + (i % 3)} rx="2" fill="url(#lh-ripple)"
+                                style={`animation-delay: ${-i * .43}s; --drift: ${i % 2 ? 12 : -12}px;`} />
+                        ))}
+                    </g>
+                </g>
+            </svg>
+        </div>
+    </div>
+    <div class="lighthouse-shade" aria-hidden="true"></div>
+    <div class="lighthouse-copy"><slot /></div>
+    <div class="lighthouse-bottom"><span>技术 · 创造 · 日常</span><button class="lighthouse-motion" type="button" aria-pressed="false" hidden>暂停动效</button></div>
+</lighthouse-hero>
+
+<style>
+    .lighthouse-hero { display: block; position: relative; isolation: isolate; height: min(76vh, 650px); min-height: 590px; overflow: hidden; }
+    .lighthouse-scene { position: absolute; inset: -24px; z-index: -3; transform: translate3d(var(--pointer-x, 0px), var(--pointer-y, 0px), 0); }
+    .lighthouse-plane { position: absolute; width: max(100%, calc(var(--scene-height, 700px) * 1.49906)); aspect-ratio: 2400 / 1601; left: 50%; top: 52%; transform: translate(-50%, -52%); }
+    .lighthouse-photo { display: block; width: 100%; height: 100%; }
+    .lighthouse-light { position: absolute; inset: 0; width: 100%; height: 100%; mix-blend-mode: screen; pointer-events: none; }
+    .lh-sweep { transform-origin: 1545px 806px; animation: lh-sweep 18s ease-in-out infinite; }
+    .lh-halo { animation: lh-breathe 9s ease-in-out infinite; }
+    .lh-fog-far { animation: lh-mist-far 28s ease-in-out infinite alternate; }
+    .lh-fog-near { opacity: .6; animation: lh-mist-near 22s ease-in-out infinite alternate; }
+    .lh-reflection { animation: lh-reflect 18s ease-in-out infinite; transform-origin: 1545px 1380px; }
+    .lh-ripple { animation: lh-ripple 5s ease-in-out infinite; }
+    .lighthouse-hero[data-motion="paused"] .lighthouse-light * { animation-play-state: paused; }
+    .lighthouse-shade { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(5,12,22,.72), rgba(5,12,22,.22) 46%, transparent 72%), linear-gradient(0deg, var(--page-bg), transparent 32%, rgba(7,13,21,.12)); }
+    .lighthouse-copy { max-width: 1160px; height: 100%; margin: auto; padding: 0 40px 93px; display: flex; align-items: end; }
+    .lighthouse-bottom { position: absolute; bottom: 25px; left: 0; right: 0; max-width: 1160px; padding: 0 40px; margin: auto; display: flex; justify-content: space-between; align-items: center; color: #99a7b7; font-size: 11px; letter-spacing: 1px; }
+    .lighthouse-motion { font-size: 11px; padding: 8px 0 8px 16px; color: #b7c4d2; }
+    .lighthouse-motion::before { content: 'Ⅱ'; margin-right: 8px; }
+    .lighthouse-motion[aria-pressed="true"]::before { content: '▶'; }
+    .lighthouse-motion:hover { color: #eab778; }
+    .lighthouse-motion:focus-visible { outline: 2px solid #eab778; outline-offset: 5px; }
+    @keyframes lh-sweep { 0%, 100% { transform: rotate(-8deg); opacity: .32; } 50% { transform: rotate(8deg); opacity: .75; } }
+    @keyframes lh-breathe { 0%, 100% { opacity: .35; } 50% { opacity: .85; } }
+    @keyframes lh-mist-far { from { transform: translate(-85px, 0); opacity: .4; } to { transform: translate(75px, -18px); opacity: .85; } }
+    @keyframes lh-mist-near { from { transform: translate(85px, 0); } to { transform: translate(-95px, 13px); } }
+    @keyframes lh-reflect { 0%, 100% { opacity: .25; transform: scaleX(.85); } 50% { opacity: .65; transform: scaleX(1.15); } }
+    @keyframes lh-ripple { 0%, 100% { opacity: .15; transform: translateX(var(--drift)); } 50% { opacity: .65; transform: translateX(0); } }
+    @media (max-width: 760px) {
+        .lighthouse-hero { height: 620px; min-height: 0; }
+        .lighthouse-plane { left: 54%; transform: translate(-54%, -52%); }
+        .lighthouse-copy { padding: 0 24px 92px; }
+        .lighthouse-bottom { padding: 0 24px; font-size: 10px; }
+        .lighthouse-shade { background: linear-gradient(90deg, rgba(5,12,22,.72), rgba(5,12,22,.2)), linear-gradient(0deg, var(--page-bg), rgba(7,13,21,.15) 45%, transparent 80%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .lighthouse-light * { animation: none !important; }
+        .lighthouse-scene { transform: none !important; }
+        .lighthouse-motion { display: none; }
+        .lh-sweep { opacity: .35; }
+    }
+</style>
+
+<script>
+    class LighthouseHero extends HTMLElement {
+        private cleanup?: () => void;
+
+        connectedCallback() {
+            const scene = this.querySelector<HTMLElement>('.lighthouse-scene');
+            const button = this.querySelector<HTMLButtonElement>('.lighthouse-motion');
+            if (!scene || !button || this.cleanup) return;
+            const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+            const fine = matchMedia('(pointer: fine)');
+            let paused = false;
+            let visible = false;
+            let pointerFrame = 0;
+            let pointerX = 0;
+            let pointerY = 0;
+            const update = () => {
+                const running = !paused && !reduce.matches && visible && !document.hidden;
+                this.dataset.motion = running ? 'running' : 'paused';
+                button.hidden = reduce.matches;
+                button.setAttribute('aria-pressed', String(paused));
+                button.textContent = paused ? '播放动效' : '暂停动效';
+                if (!running) {
+                    cancelAnimationFrame(pointerFrame);
+                    pointerFrame = 0;
+                    scene.style.removeProperty('--pointer-x');
+                    scene.style.removeProperty('--pointer-y');
+                }
+            };
+            const resize = new ResizeObserver(() => {
+                this.style.setProperty('--scene-height', `${scene.offsetHeight}px`);
+            });
+            resize.observe(scene);
+            const intersection = new IntersectionObserver(([entry]) => {
+                visible = entry.isIntersecting;
+                update();
+            });
+            intersection.observe(this);
+            const toggle = () => { paused = !paused; update(); };
+            const resetPointer = () => {
+                cancelAnimationFrame(pointerFrame);
+                pointerFrame = 0;
+                scene.style.removeProperty('--pointer-x');
+                scene.style.removeProperty('--pointer-y');
+            };
+            const pointer = (event: PointerEvent) => {
+                if (!fine.matches || this.dataset.motion !== 'running') return;
+                const bounds = this.getBoundingClientRect();
+                pointerX = (event.clientX - bounds.left) / bounds.width - .5;
+                pointerY = (event.clientY - bounds.top) / bounds.height - .5;
+                if (pointerFrame) return;
+                pointerFrame = requestAnimationFrame(() => {
+                    scene.style.setProperty('--pointer-x', `${-pointerX * 8}px`);
+                    scene.style.setProperty('--pointer-y', `${-pointerY * 5}px`);
+                    pointerFrame = 0;
+                });
+            };
+            button.addEventListener('click', toggle);
+            this.addEventListener('pointermove', pointer);
+            this.addEventListener('pointerleave', resetPointer);
+            reduce.addEventListener('change', update);
+            fine.addEventListener('change', resetPointer);
+            document.addEventListener('visibilitychange', update);
+            update();
+            this.cleanup = () => {
+                resize.disconnect();
+                intersection.disconnect();
+                cancelAnimationFrame(pointerFrame);
+                button.removeEventListener('click', toggle);
+                this.removeEventListener('pointermove', pointer);
+                this.removeEventListener('pointerleave', resetPointer);
+                reduce.removeEventListener('change', update);
+                fine.removeEventListener('change', resetPointer);
+                document.removeEventListener('visibilitychange', update);
+            };
+        }
+
+        disconnectedCallback() { this.cleanup?.(); this.cleanup = undefined; }
+    }
+    if (!customElements.get('lighthouse-hero')) customElements.define('lighthouse-hero', LighthouseHero);
+</script>

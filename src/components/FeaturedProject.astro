@@ -1,0 +1,69 @@
+---
+import type { CollectionEntry } from "astro:content";
+interface Props { project: CollectionEntry<"projects">; }
+const { project } = Astro.props;
+const { data } = project;
+const [name, subtitle] = data.title.split(" · ");
+const captionsDemo = project.id === "local-live-captions" || project.slug === "local-live-captions";
+---
+
+<article class="featured-home-project">
+    <div>
+        <p class="status">{data.status}{data.year && ` · ${data.year}`}</p>
+        <h3>{name}{subtitle && <span>{subtitle}</span>}</h3>
+        <p class="description">{data.description}</p>
+        {data.tech && <p class="stack">{data.tech}</p>}
+        <a class="project-link" href={data.link} target="_blank" rel="noopener noreferrer">查看项目与开发记录 <span aria-hidden="true">↗</span></a>
+    </div>
+    {data.cover ? (
+        <img class="project-cover" src={data.cover} alt={`${data.title} 项目界面`} loading="lazy" />
+    ) : captionsDemo ? (
+        <div class="product-visual" role="img" aria-label="双语字幕布局示意，非真实产品截图">
+            <span class="visual-label">LIVE CAPTIONS / 字幕效果示意</span>
+            <div class="wave" aria-hidden="true">{Array.from({ length: 55 }, (_, i) => <i style={`height:${6 + Math.abs(Math.sin(i * 1.9) * Math.cos(i * .29)) * 37}px`}></i>)}</div>
+            <div class="caption-window">
+                <div class="window-top"><span>Local Live Captions</span><span>● 本地识别</span></div>
+                <p lang="en">Every small step is a new beginning.</p>
+                <p>每一个小小的进步，都是新的开始。</p>
+            </div>
+            <span class="visual-note">布局示意 · 非产品截图</span>
+        </div>
+    ) : (
+        <dl class="project-facts"><div><dt>项目</dt><dd>{data.title}</dd></div><div><dt>负责</dt><dd>{data.role || "个人项目"}</dd></div><div><dt>状态</dt><dd>{data.status || "持续探索"}</dd></div></dl>
+    )}
+</article>
+
+<style>
+    .featured-home-project { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 55px; align-items: center; padding: 30px 0 44px; border-bottom: 1px solid var(--home-line); }
+    h3 { font-size: 26px; font-weight: 500; line-height: 1.4; letter-spacing: -.7px; margin: 16px 0; }
+    h3 span { display: block; color: #a8b6c6; font-size: 17px; letter-spacing: 0; margin-top: 6px; }
+    .status { font-size: 11px; color: #b4c4b4; display: flex; align-items: center; gap: 8px; margin: 0; }
+    .status::before { content: ''; width: 5px; height: 5px; background: #b4c4a7; border-radius: 50%; }
+    .description { color: var(--home-muted); font-size: 13px; line-height: 1.95; margin: 0 0 22px; max-width: 380px; }
+    .stack { font-size: 11px; letter-spacing: .8px; color: #9babbc; margin-bottom: 24px; }
+    .project-link { color: var(--home-gold); font-size: 12px; }
+    .project-link span { margin-left: 12px; }
+    .project-link:hover { text-decoration: underline; text-underline-offset: 5px; }
+    .product-visual { background: radial-gradient(ellipse at 50% 20%, #1d2c3d, #111a25 65%); height: 255px; border: 1px solid #263240; border-radius: 8px; position: relative; display: flex; align-items: center; justify-content: center; padding: 28px; overflow: hidden; }
+    .visual-label { position: absolute; top: 15px; left: 18px; font-size: 10px; letter-spacing: 1px; color: #a0afc1; }
+    .wave { position: absolute; top: 53px; left: 30px; right: 30px; display: flex; gap: 4px; align-items: center; justify-content: center; height: 50px; opacity: .25; }
+    .wave i { width: 2px; flex-shrink: 0; background: #7fa4c2; border-radius: 2px; }
+    .caption-window { position: relative; margin-top: 34px; width: 100%; background: rgba(9,14,21,.91); border: 1px solid #3c4755; border-radius: 7px; box-shadow: 0 20px 35px #0005; padding: 13px 18px 20px; }
+    .window-top { font-size: 10px; color: #a3b1c1; display: flex; justify-content: space-between; gap: 10px; padding-bottom: 16px; }
+    .caption-window p { font-size: 12px; line-height: 1.6; color: #dfebf4; margin: 0; }
+    .caption-window p + p { font-size: 11px; color: #e7ba81; margin-top: 6px; }
+    .visual-note { position: absolute; bottom: 14px; right: 18px; font-size: 10px; color: #a0afc1; }
+    .project-cover { width: 100%; aspect-ratio: 2 / 1; object-fit: contain; border-radius: 8px; background: #111a25; }
+    .project-facts div { display: flex; justify-content: space-between; gap: 20px; padding: 15px 0; border-bottom: 1px solid var(--home-line); font-size: 13px; }
+    .project-facts dt { color: #a6b3c3; }
+    @media (max-width: 760px) {
+        .featured-home-project { grid-template-columns: minmax(0,1fr); gap: 25px; padding: 27px 0 30px; }
+        h3 { font-size: 25px; }
+        .description { max-width: none; }
+        .stack { margin-bottom: 17px; }
+        .product-visual { height: 225px; padding: 20px; }
+        .caption-window { padding: 12px 13px 16px; }
+        .caption-window p { font-size: 11px; }
+        .caption-window p + p, .window-top { font-size: 10px; }
+    }
+</style>

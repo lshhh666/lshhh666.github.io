@@ -142,7 +142,7 @@ const bannerOffset =
 	>
 		<div class="fixed top-0 left-0 right-0 h-[2px] z-[60] pointer-events-none" aria-hidden="true"
 			 style="background:linear-gradient(90deg, rgba(255,180,84,.85), rgba(255,180,84,.15) 45%, transparent 80%)"></div>
-		<GlobalBackdrop></GlobalBackdrop>
+		<GlobalBackdrop quiet={!isHomePage} />
 		<Navbar></Navbar>
 		<ConfigCarrier></ConfigCarrier>
 		<slot />
@@ -262,7 +262,13 @@ function setClickOutsideToClose(panel: string, ignores: string[]) {
 				return;
 			}
 		}
-		panelDom!.classList.add("float-panel-closed");
+		panelDom?.classList.add("float-panel-closed");
+		if (panel === "nav-menu-panel" && panelDom) {
+			panelDom.style.opacity = "0";
+			panelDom.style.pointerEvents = "none";
+			panelDom.inert = true;
+			document.getElementById("nav-menu-switch")?.setAttribute("aria-expanded", "false");
+		}
 	});
 }
 setClickOutsideToClose("display-setting", ["display-setting", "display-settings-switch"])

@@ -1,9 +1,11 @@
 ---
-// 全局背景：深蓝环境光 + 交互星场（canvas，星星缓慢漂移、鼠标靠近时吸引增亮）。
+// A little night-sky texture at the edges; keep reading columns quiet.
 import StarField from "./StarField.astro";
+interface Props { quiet?: boolean; }
+const { quiet = true } = Astro.props;
 ---
 
 <div class="fixed inset-0 z-0 pointer-events-none" aria-hidden="true">
     <div class="absolute inset-0" style="background: radial-gradient(900px 460px at 82% -10%, rgba(46,74,122,.13), transparent 65%), radial-gradient(700px 420px at 8% 30%, rgba(46,74,122,.06), transparent 65%);"></div>
-    <StarField></StarField>
+    <StarField quiet={quiet} />
 </div>
