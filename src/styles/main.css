@@ -157,8 +157,7 @@
   }
 }
 
-/* Editorial inner pages: content hierarchy comes from type, whitespace and hairlines,
-   while the interactive star field remains the single expressive motion layer. */
+/* Reading hierarchy uses type, whitespace and quiet dividers. */
 .editorial-article-header {
     padding: 0 0 1.8rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.075);
@@ -216,40 +215,49 @@
     margin-bottom: 1.05rem !important;
 }
 
-.editorial-license {
-    border-top: 1px solid rgba(255, 255, 255, 0.075);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.075);
-    background: transparent !important;
+.editorial-title {
+    margin: 0;
+    color: #e9edf2;
+    font-size: clamp(1.8rem, 3vw, 2.35rem);
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: -.025em;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
 }
-
+.editorial-title-phrase { display: inline-block; max-width: 100%; vertical-align: top; overflow-wrap: anywhere; }
+.editorial-deck { margin: 18px 0 0; color: #adbac9; font-size: .95rem; line-height: 1.85; }
 .editorial-post-nav {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 2rem;
-    margin-top: 2rem;
-    padding-top: 1.2rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.075);
+    gap: 1.25rem;
+    margin-top: 1.25rem;
 }
-
+.editorial-post-nav:empty { display: none; }
 .editorial-post-nav a {
     min-width: 0;
-    color: #697585;
-    font-size: 0.75rem;
+    padding: 20px 0;
+    border-top: 1px solid rgba(188,205,224,.18);
+    color: #9aa9bb;
+    font-size: .8rem;
 }
-
+.editorial-post-nav a:only-child { grid-column: 1 / -1; text-align: left; }
 .editorial-post-nav strong {
     display: block;
-    margin-top: 0.25rem;
-    overflow: hidden;
-    color: #c4ccd6;
-    font-size: 0.875rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    margin-top: 10px;
+    color: #e1e7ee;
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+    text-wrap: pretty;
 }
-
-.editorial-post-nav a:hover strong {
-    color: #ffb454;
-}
+.editorial-post-nav a:hover { border-color: #eab778; }
+.editorial-post-nav a:hover strong { color: #eab778; }
+.editorial-post-nav a:focus-visible, .editorial-return a:focus-visible { outline: 2px solid #eab778; outline-offset: 5px; }
+.editorial-return { margin-top: 16px; color: #a6b3c3; font-size: 12px; }
+.editorial-return a:hover { color: #eab778; }
+.editorial-return span { margin-left: 8px; }
 
 .editorial-page {
     color: #c4ccd6;
@@ -266,7 +274,7 @@
     content: "目录";
     display: block;
     margin-bottom: 0.35rem;
-    color: #697585;
+    color: #9aa9bb;
     font-size: 0.65rem;
     font-weight: 600;
     letter-spacing: 0.14em;
@@ -276,7 +284,7 @@
     min-height: 0;
     padding: 0.38rem 0 !important;
     border-radius: 0 !important;
-    color: #697585;
+    color: #9aa9bb;
     background: transparent !important;
 }
 
@@ -307,208 +315,8 @@
     display: none;
 }
 
-/* Projects: one featured project followed by an editorial index. */
-.projects-intro {
-    padding: 2.2rem 0 3.1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.075);
-}
-
-.projects-intro > p {
-    margin: 0 0 0.8rem;
-    color: #8a96a5;
-    font-size: 0.72rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-}
-
-.projects-intro h1 {
-    margin: 0;
-    color: #e9edf2;
-    font-size: clamp(2.2rem, 4.4vw, 3.35rem);
-    line-height: 1.08;
-    letter-spacing: -0.045em;
-}
-
-.projects-intro > div {
-    max-width: 40rem;
-    margin-top: 1rem;
-    color: #8a96a5;
-    font-size: 0.9rem;
-}
-
-.projects-index {
-    padding-top: 3.35rem;
-}
-
-.featured-project {
-    display: grid;
-    grid-template-columns: 7rem minmax(0, 1fr) 14.5rem;
-    gap: 1.75rem;
-    padding: 2.15rem 0 2.4rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.075);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.075);
-}
-
-.project-number {
-    color: #ffb454;
-    font-family: "JetBrains Mono Variable", Consolas, monospace;
-    font-size: 0.72rem;
-    text-transform: uppercase;
-}
-
-.project-main h2 {
-    margin: 0;
-    color: #e9edf2;
-    font-size: clamp(1.7rem, 3vw, 2.2rem);
-    line-height: 1.2;
-    letter-spacing: -0.03em;
-}
-
-.project-main p {
-    max-width: 38rem;
-    margin: 0.75rem 0 0;
-    color: #8a96a5;
-    font-size: 0.875rem;
-}
-
-.project-main a {
-    display: inline-block;
-    margin-top: 1.15rem;
-    color: #ffb454;
-    font-size: 0.8rem;
-}
-
-.project-facts {
-    align-self: end;
-    margin: 0;
-}
-
-.project-facts > div {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 0.45rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.075);
-    font-size: 0.72rem;
-}
-
-.project-facts dt {
-    color: #697585;
-}
-
-.project-facts dd {
-    margin: 0;
-    color: #c4ccd6;
-    text-align: right;
-}
-
-.project-index-row {
-    display: grid;
-    grid-template-columns: 7rem minmax(0, 1fr) 7.5rem 3.5rem 3.75rem;
-    gap: 1.75rem;
-    align-items: baseline;
-    padding: 1.55rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.075);
-}
-
-.project-index-copy {
-    min-width: 0;
-}
-
-.project-index-copy strong {
-    display: block;
-    color: #e9edf2;
-    font-size: 1.15rem;
-    letter-spacing: -0.02em;
-}
-
-.project-index-copy small {
-    display: block;
-    margin-top: 0.25rem;
-    overflow: hidden;
-    color: #8a96a5;
-    font-size: 0.78rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.project-state,
-.project-year,
-.project-arrow {
-    color: #697585;
-    font-size: 0.72rem;
-}
-
-.project-index-row:hover .project-index-copy strong,
-.project-index-row:hover .project-arrow {
-    color: #ffb454;
-}
-
-@media (max-width: 960px) {
-    .featured-project {
-        grid-template-columns: 5rem minmax(0, 1fr);
-    }
-    .project-facts {
-        grid-column: 2;
-        width: min(100%, 22rem);
-    }
-    .project-index-row {
-        grid-template-columns: 5rem minmax(0, 1fr) 6rem 3rem 3.5rem;
-        gap: 1rem;
-    }
-}
-
 @media (max-width: 720px) {
-    .editorial-markdown {
-        font-size: 0.97rem;
-    }
-    .editorial-markdown h2 {
-        margin-top: 2.6rem !important;
-        font-size: 1.4rem !important;
-    }
-    .editorial-post-nav {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    .projects-intro {
-        padding: 1.5rem 0 2rem;
-    }
-    .projects-index {
-        padding-top: 2.4rem;
-    }
-    .featured-project {
-        display: block;
-        padding: 1.6rem 0 1.9rem;
-    }
-    .project-main {
-        margin-top: 0.85rem;
-    }
-    .project-facts {
-        width: 100%;
-        margin-top: 1.4rem;
-    }
-    .project-index-row {
-        grid-template-columns: 2.6rem minmax(0, 1fr) auto;
-        gap: 0.5rem 0.75rem;
-    }
-    .project-index-copy {
-        grid-column: 2;
-        grid-row: 1;
-    }
-    .project-state {
-        grid-column: 2;
-        grid-row: 2;
-    }
-    .project-year {
-        grid-column: 3;
-        grid-row: 1;
-    }
-    .project-arrow {
-        grid-column: 3;
-        grid-row: 2;
-    }
-    .project-index-copy small {
-        white-space: normal;
-    }
+    .editorial-markdown { font-size: 0.97rem; }
+    .editorial-markdown h2 { margin-top: 2.6rem !important; font-size: 1.4rem !important; }
+    .editorial-post-nav { grid-template-columns: 1fr; gap: 1rem; }
 }
