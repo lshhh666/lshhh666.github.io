@@ -54,7 +54,7 @@ const notes = featured ? [
                     <div class="work-row-copy">
                         <h3><a href={project.data.link} target="_blank" rel="noopener noreferrer">{project.data.title}<span aria-hidden="true">↗</span></a></h3>
                         <p>{project.data.description}</p>
-                        <div class="work-row-meta">{project.data.role && <span>{project.data.role}</span>}{project.data.tech && <span>{project.data.tech}</span>}</div>
+                        <div class="work-row-meta">{project.data.role && <span>{project.data.role}</span>}{project.data.tech && <span>{project.data.tech}</span>}{project.data.article && <a href={url(project.data.article)}>开发记录 <span aria-hidden="true">↗</span></a>}</div>
                     </div>
                     <div class="work-row-state"><span>{project.data.status}</span><time>{project.data.year}</time></div>
                 </article>
@@ -106,6 +106,8 @@ const notes = featured ? [
     .work-row h3 a:hover, .work-row h3 a:hover span { color: #eab778; }
     .work-row p { max-width: 700px; margin: 10px 0 13px; color: #a6b3c3; font-size: 13px; line-height: 1.9; }
     .work-row-meta { display: flex; flex-wrap: wrap; gap: 8px 18px; color: #93a3b6; font-size: 11px; }
+    .work-row-meta a { color: #eab778; }
+    .work-row-meta a:hover { color: #ffbf71; }
     .work-row-state { display: flex; flex-direction: column; align-items: end; gap: 12px; color: #a6b3c3; font-size: 12px; }
     .work-row-state time { color: #93a3b6; font: 11px monospace; }
     .work-empty { padding: 45px 0; color: #a6b3c3; }

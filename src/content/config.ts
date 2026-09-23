@@ -27,6 +27,7 @@ const projectsCollection = defineCollection({
 		title: z.string(),
 		description: z.string(),
 		link: z.string().url(),
+		article: z.string().optional(),
 		cover: z.string().optional(),
 		coverAlt: z.string().optional(),
 		coverWidth: z.number().int().positive().optional(),
